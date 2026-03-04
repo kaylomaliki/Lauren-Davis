@@ -1,0 +1,40 @@
+/* CSS variables */
+
+:root {
+  /* Colors - Basic palette */
+  --color-primary: 0 0 0;
+  --color-secondary: 255 255 255;
+  
+  /* Spacing - Base scale */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Padding */
+  --padding-base: 15px; /* Default: 15px, changes to 10px on mobile */
+
+  /* Responsive padding - 10px on mobile */
+@media (max-width: 639px) {
+  :root {
+    --padding-base: 15px;
+  }
+}
+  /* Breakpoints - Device sizes */
+  /* These can be used in CSS media queries */
+  --breakpoint-phone: 640px;      /* Phone: up to 639px */
+  --breakpoint-tablet: 768px;     /* Tablet: 640px - 767px */
+  --breakpoint-desktop: 1024px;   /* Desktop: 768px - 1023px */
+  --breakpoint-large-desktop: 1280px; /* Large Desktop: 1024px+ */
+
+  /* Colors - Background and text */
+  --color-background: #ffffff;    /* White background */
+  --color-text: #000000;          /* Black text */
+
+  /* Transitions */
+  --transition-duration: 0.3s;    /* Default transition duration */
+}
+

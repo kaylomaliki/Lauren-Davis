@@ -1,0 +1,51 @@
+@import '../styles/variables.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+}
+
+/* Breakpoint Reference:
+ * 
+ * Phone:        < 640px  (default/mobile-first)
+ * Tablet:       640px+   (min-width: 640px)
+ * Desktop:      768px+   (min-width: 768px)
+ * Large Desktop: 1024px+ (min-width: 1024px)
+ * 
+ * Usage in CSS:
+ * @media (min-width: var(--breakpoint-tablet)) { ... }
+ * @media (min-width: var(--breakpoint-desktop)) { ... }
+ * 
+ * Usage with Tailwind (Tailwind's default breakpoints):
+ * sm: 640px, md: 768px, lg: 1024px, xl: 1280px
+ */
+
+/* Minimal reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Accessibility: Visible focus styles */
+*:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Ensure focus is visible for interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
