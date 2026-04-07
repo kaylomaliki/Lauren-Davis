@@ -343,7 +343,14 @@ export default function OptimizedImage({
   }, [className]);
 
   return (
-    <div ref={containerRef} style={{ position: "relative", width, height }}>
+    <div
+      ref={containerRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        maxWidth: "100%",
+      }}
+    >
       {/* CSS placeholder */}
       <div style={placeholderStyle} aria-hidden="true" />
       {/* Image */}

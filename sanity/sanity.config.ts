@@ -1,18 +1,15 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-import homepage from "./schemaTypes/homepage";
-import post from "./schemaTypes/post";
-import page from "./schemaTypes/page";
 import globalSettings from "./schemaTypes/globalSettings";
-import imageWithAlt from "./schemaTypes/imageWithAlt";
-import navigation from "./schemaTypes/navigation";
+import homepage from "./schemaTypes/homepage";
+import work from "./schemaTypes/work";
 
 /**
  * Sanity Studio Configuration
- * 
+ *
  * This configures the Sanity Studio admin interface.
  * Add or remove schema types in the `types` array below.
- * 
+ *
  * To add a new content type:
  * 1. Create a new schema file in ./schemaTypes/
  * 2. Import it above
@@ -26,15 +23,27 @@ export default defineConfig({
   basePath: "/studio",
   apiVersion: "2024-01-01",
   useCdn: true,
-  plugins: [structureTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title("Content")
+          .items([
+            S.listItem()
+              .title("Homepage")
+              .id("homepage")
+              .child(
+                S.document()
+                  .schemaType("homepage")
+                  .documentId("homepage")
+              ),
+            ...S.documentTypeListItems().filter(
+              (listItem) => listItem.getId() !== "homepage"
+            ),
+          ]),
+    }),
+  ],
   schema: {
-    types: [
-      homepage,
-      post,
-      page,
-      globalSettings,
-      imageWithAlt,
-      navigation,
-    ],
+    types: [globalSettings, homepage, work],
   },
 });

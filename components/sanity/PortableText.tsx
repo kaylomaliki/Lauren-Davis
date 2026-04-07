@@ -39,7 +39,7 @@ export default function PortableText({ content }: PortableTextProps) {
             <h4 className="text-xl font-semibold mt-3 mb-2">{children}</h4>
           ),
           normal: ({ children }) => (
-            <p className="mb-4 leading-relaxed">{children}</p>
+            <div className="mb-4 leading-relaxed">{children}</div>
           ),
           blockquote: ({ children }) => (
             <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4">

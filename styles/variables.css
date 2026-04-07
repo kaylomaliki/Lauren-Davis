@@ -15,7 +15,7 @@
   --spacing-3xl: 4rem;
 
   /* Padding */
-  --padding-base: 15px; /* Default: 15px, changes to 10px on mobile */
+  --padding-base: 20px; /* Default: 15px, changes to 10px on mobile */
 
   /* Responsive padding - 10px on mobile */
 @media (max-width: 639px) {
@@ -31,8 +31,9 @@
   --breakpoint-large-desktop: 1280px; /* Large Desktop: 1024px+ */
 
   /* Colors - Background and text */
-  --color-background: #ffffff;    /* White background */
-  --color-text: #000000;          /* Black text */
+  --color-background: rgb(207, 207, 207);    /* White background */
+  --color-text: #363636;          /* Black text */
+  --color-border: #ffffff;        /* Black border / accent lines */
 
   /* Transitions */
   --transition-duration: 0.3s;    /* Default transition duration */

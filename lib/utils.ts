@@ -27,6 +27,7 @@ export function formatDate(
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   }
 ): string {
   return new Date(dateString).toLocaleDateString("en-US", options);

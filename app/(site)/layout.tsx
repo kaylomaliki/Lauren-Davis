@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getGlobalSettings } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
+import Nav from "@/components/Nav";
+import { GallerySelectionProvider } from "@/contexts/GallerySelectionContext";
 
 export async function generateMetadata(): Promise<Metadata> {
   const globalSettings = await getGlobalSettings();
@@ -17,6 +19,11 @@ export default function SiteLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <GallerySelectionProvider>
+      <Nav />
+      {children}
+    </GallerySelectionProvider>
+  );
 }
 

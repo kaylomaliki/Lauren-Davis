@@ -1,5 +1,5 @@
 import { sanityClient } from "./sanity.client";
-import type { PortableTextBlock } from "@portabletext/types";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 /**
  * TypeScript types for Sanity content
@@ -18,31 +18,24 @@ export interface GlobalSettings {
   };
 }
 
-export interface Page {
+/** Singleton document `homepage` — one image for the site homepage */
+export interface Homepage {
   _id: string;
-  title?: string;
-  slug?: {
-    current: string;
-  };
-  description?: string;
-  content?: PortableTextBlock[]; // Portable text content (array of blocks)
+  image?: SanityImageSource;
 }
 
-export interface Post {
+export type WorkTag = "commercial" | "editorial" | "fashion" | "music" | "press photos";
+
+export interface WorkImageItem {
+  image?: SanityImageSource;
+  title?: string;
+}
+
+export interface Work {
   _id: string;
   title?: string;
-  slug?: {
-    current: string;
-  };
-  description?: string;
-  content?: PortableTextBlock[]; // Portable text content (array of blocks)
-  featuredImage?: {
-    asset: {
-      _ref: string;
-      _type: "reference";
-    };
-  };
-  publishedAt?: string;
+  images?: WorkImageItem[];
+  tag?: WorkTag;
 }
 
 /**
@@ -67,63 +60,52 @@ export async function getGlobalSettings(): Promise<GlobalSettings | null> {
 }
 
 /**
- * Fetch a page by slug
- * Works with "homepage", "page", or any document type with a slug field
+ * Homepage singleton — create "Homepage" in Studio (fixed document) and upload the hero image.
  */
-export async function getPageBySlug(slug: string): Promise<Page | null> {
+export async function getHomepage(): Promise<Homepage | null> {
   try {
-    const query = `*[_type in ["homepage", "page"] && slug.current == $slug][0]{
+    const query = `*[_type == "homepage"][0]{
       _id,
-      title,
-      slug,
-      description,
-      content
+      image {
+        ...,
+        asset-> {
+          _id,
+          _ref,
+          metadata
+        }
+      }
     }`;
-    return await sanityClient.fetch<Page | null>(query, { slug });
+    return await sanityClient.fetch<Homepage | null>(query);
   } catch (error) {
-    console.error(`Error fetching page with slug "${slug}":`, error);
+    console.error("Error fetching homepage:", error);
     return null;
   }
 }
 
 /**
- * Fetch all posts
- * Useful for blog listings, archives, etc.
+ * Fetch all Work documents
  */
-export async function getAllPosts(): Promise<Post[]> {
+export async function getAllWork(): Promise<Work[]> {
   try {
-    const query = `*[_type == "post"] | order(publishedAt desc) {
+    const query = `*[_type == "work"]{
       _id,
       title,
-      slug,
-      description,
-      featuredImage,
-      publishedAt
+      "images": images[] {
+        "title": coalesce(title, image.title),
+        "image": coalesce(image, @) {
+          ...,
+          "asset": asset-> {
+            _id,
+            _ref,
+            metadata
+          }
+        }
+      },
+      tag
     }`;
-    return await sanityClient.fetch<Post[]>(query);
+    return await sanityClient.fetch<Work[]>(query);
   } catch (error) {
-    console.error("Error fetching all posts:", error);
+    console.error("Error fetching work:", error);
     return [];
-  }
-}
-
-/**
- * Fetch a single post by slug
- */
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  try {
-    const query = `*[_type == "post" && slug.current == $slug][0]{
-      _id,
-      title,
-      slug,
-      description,
-      content,
-      featuredImage,
-      publishedAt
-    }`;
-    return await sanityClient.fetch<Post | null>(query, { slug });
-  } catch (error) {
-    console.error(`Error fetching post with slug "${slug}":`, error);
-    return null;
   }
 }
