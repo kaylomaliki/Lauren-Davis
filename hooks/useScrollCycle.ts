@@ -28,6 +28,8 @@ export interface ScrollCycleState {
   scrollModPx: number;
   /** Full cycle length in px (slideCount * step) */
   cyclePx: number;
+  /** Progress within the current slide, 0–1 */
+  slideProgress: number;
   scrollToSlide: (index: number) => void;
 }
 
@@ -38,6 +40,7 @@ export default function useScrollCycle(slideCount: number): ScrollCycleState {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollModPx, setScrollModPx] = useState(0);
   const [cyclePx, setCyclePx] = useState(0);
+  const [slideProgress, setSlideProgress] = useState(0);
 
   useLayoutEffect(() => {
     if (initializedRef.current || n <= 1) return;
@@ -82,6 +85,7 @@ export default function useScrollCycle(slideCount: number): ScrollCycleState {
     if (n <= 1) {
       setActiveIndex(0);
       setScrollModPx(0);
+      setSlideProgress(0);
       return;
     }
 
@@ -90,6 +94,7 @@ export default function useScrollCycle(slideCount: number): ScrollCycleState {
     const idx = Math.floor(mod / step) % n;
     setActiveIndex((prev) => (prev === idx ? prev : idx));
     setScrollModPx(mod);
+    setSlideProgress((mod % step) / step);
   }, [n]);
 
   useLayoutEffect(() => {
@@ -132,5 +137,5 @@ export default function useScrollCycle(slideCount: number): ScrollCycleState {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [n, scrollToY]);
 
-  return { activeIndex, scrollModPx, cyclePx, scrollToSlide };
+  return { activeIndex, scrollModPx, cyclePx, slideProgress, scrollToSlide };
 }

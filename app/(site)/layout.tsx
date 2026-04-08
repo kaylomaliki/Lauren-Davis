@@ -3,6 +3,7 @@ import { getGlobalSettings } from "@/lib/queries";
 import { buildMetadata } from "@/lib/seo";
 import Nav from "@/components/Nav";
 import { GallerySelectionProvider } from "@/contexts/GallerySelectionContext";
+import { ActiveSlideProvider } from "@/contexts/ActiveSlideContext";
 
 export async function generateMetadata(): Promise<Metadata> {
   const globalSettings = await getGlobalSettings();
@@ -21,8 +22,10 @@ export default function SiteLayout({
 }>) {
   return (
     <GallerySelectionProvider>
-      <Nav />
-      {children}
+      <ActiveSlideProvider>
+        <Nav />
+        {children}
+      </ActiveSlideProvider>
     </GallerySelectionProvider>
   );
 }

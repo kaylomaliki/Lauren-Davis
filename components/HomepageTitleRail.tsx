@@ -13,6 +13,7 @@ interface HomepageTitleRailProps {
   scrollModPx: number;
   cyclePx: number;
   onNavigateToSlide: (index: number) => void;
+  onHoverTitle: (index: number | null) => void;
 }
 
 export default function HomepageTitleRail({
@@ -21,6 +22,7 @@ export default function HomepageTitleRail({
   scrollModPx,
   cyclePx,
   onNavigateToSlide,
+  onHoverTitle,
 }: HomepageTitleRailProps) {
   const stripRef = useRef<HTMLDivElement>(null);
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -140,10 +142,12 @@ export default function HomepageTitleRail({
                     textDecoration:
                       slideIndex === safeActive ? "underline" : "none",
                     textUnderlineOffset: "0.12em",
-                    paddingLeft: slideIndex === safeActive ? "200px" : "0px",
+                    paddingLeft: slideIndex === safeActive ? "0px" : "0px",
                     transition: "padding-left 0s ease",
                   }}
                   onClick={() => onNavigateToSlide(slideIndex)}
+                  onMouseEnter={() => onHoverTitle(slideIndex)}
+                  onMouseLeave={() => onHoverTitle(null)}
                 >
                   {label}
                 </button>

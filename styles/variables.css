@@ -31,8 +31,8 @@
   --breakpoint-large-desktop: 1280px; /* Large Desktop: 1024px+ */
 
   /* Colors - Background and text */
-  --color-background: rgb(207, 207, 207);    /* White background */
-  --color-text: #363636;          /* Black text */
+  --color-background: rgb(255, 255, 255);    /* White background */
+  --color-text: #555555;          /* Black text */
   --color-border: #ffffff;        /* Black border / accent lines */
 
   /* Transitions */

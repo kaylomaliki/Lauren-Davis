@@ -1,20 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import type { Work } from "@/lib/queries";
 import OptimizedImage from "@/components/images/OptimizedImage";
-import HomepageTitleRail from "@/components/HomepageTitleRail";
 import ImageMagnifier from "@/components/ImageMagnifier";
 import useScrollCycle, {
   SCROLL_VH_PER_SLIDE,
   TOTAL_CYCLES,
 } from "@/hooks/useScrollCycle";
+import { useActiveSlide } from "@/contexts/ActiveSlideContext";
 
 interface OverviewScrollFadeProps {
   works: Work[];
 }
 
-const TRANSITION_MS = 100;
+const TRANSITION_MS = 0;
 
 export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
   const slides = useMemo(
@@ -35,18 +35,27 @@ export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
     [works]
   );
 
-  const titles = useMemo(
-    () => slides.map((s) => s.title?.trim() || "Untitled"),
-    [slides]
-  );
+  const { activeIndex, slideProgress } = useScrollCycle(slides.length);
 
-  const { activeIndex, scrollModPx, cyclePx, scrollToSlide } =
-    useScrollCycle(slides.length);
+  const { setActiveTitle, setSlideProgress, magnifying, setMagnifying } = useActiveSlide();
 
-  const [magnifying, setMagnifying] = useState(false);
+  useEffect(() => {
+    const title = slides[activeIndex]?.title?.trim() || "";
+    setActiveTitle(title);
+  }, [activeIndex, slides, setActiveTitle]);
+
+  useEffect(() => {
+    setSlideProgress(slideProgress);
+  }, [slideProgress, setSlideProgress]);
+
 
   if (slides.length === 0) {
-    return <div className="h-[100vh] w-[100vw]" style={{ backgroundColor: "var(--color-background)" }} />;
+    return (
+      <div
+        className="h-[100vh] w-[100vw]"
+        style={{ backgroundColor: "var(--color-background)" }}
+      />
+    );
   }
 
   const scrollHeightVh =
@@ -54,13 +63,6 @@ export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
 
   return (
     <>
-      <HomepageTitleRail
-        titles={titles}
-        activeIndex={activeIndex}
-        scrollModPx={scrollModPx}
-        cyclePx={cyclePx}
-        onNavigateToSlide={scrollToSlide}
-      />
       {magnifying && slides[activeIndex] && (
         <ImageMagnifier
           image={slides[activeIndex].image}
@@ -88,13 +90,19 @@ export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
                 transition: `opacity ${TRANSITION_MS}ms ease`,
               }}
             >
-              <div className="relative h-[400px] w-full max-w-[1000px]">
+              <div
+                className="relative"
+                style={{
+                  height: "60vh",
+                  width: "calc(100vw - 2 * var(--padding-base))",
+                }}
+              >
                 <OptimizedImage
                   image={slide.image}
                   alt={slide.title ?? "Overview image"}
                   fill
                   priority={index === 0}
-                  sizes="(max-width: 768px) 100vw, 1000px"
+                  sizes="calc(100vw - 2 * var(--padding-base))"
                   objectFit="contain"
                   className="object-contain"
                 />
