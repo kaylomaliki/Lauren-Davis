@@ -1,3 +1,7 @@
+import {
+  orderRankField,
+  orderRankOrdering,
+} from "@sanity/orderable-document-list";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 const TAG_OPTIONS = [
@@ -12,7 +16,9 @@ export default defineType({
   name: "work",
   title: "Work",
   type: "document",
+  orderings: [orderRankOrdering],
   fields: [
+    orderRankField({ type: "work" }),
     defineField({
       name: "title",
       title: "Title",

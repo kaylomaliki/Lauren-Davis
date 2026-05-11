@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 const ActiveSlideContext = createContext<{
   activeTitle: string;
@@ -9,6 +9,9 @@ const ActiveSlideContext = createContext<{
   setSlideProgress: (progress: number) => void;
   magnifying: boolean;
   setMagnifying: (v: boolean) => void;
+  overviewSlideIndex: number;
+  overviewSlideCount: number;
+  setOverviewSlides: (index: number, count: number) => void;
 } | null>(null);
 
 export function ActiveSlideProvider({
@@ -19,9 +22,27 @@ export function ActiveSlideProvider({
   const [activeTitle, setActiveTitle] = useState("");
   const [slideProgress, setSlideProgress] = useState(0);
   const [magnifying, setMagnifying] = useState(false);
+  const [overviewSlideIndex, setOverviewSlideIndex] = useState(0);
+  const [overviewSlideCount, setOverviewSlideCount] = useState(0);
+
+  const setOverviewSlides = useCallback((index: number, count: number) => {
+    setOverviewSlideIndex(index);
+    setOverviewSlideCount(count);
+  }, []);
+
   return (
     <ActiveSlideContext.Provider
-      value={{ activeTitle, setActiveTitle, slideProgress, setSlideProgress, magnifying, setMagnifying }}
+      value={{
+        activeTitle,
+        setActiveTitle,
+        slideProgress,
+        setSlideProgress,
+        magnifying,
+        setMagnifying,
+        overviewSlideIndex,
+        overviewSlideCount,
+        setOverviewSlides,
+      }}
     >
       {children}
     </ActiveSlideContext.Provider>

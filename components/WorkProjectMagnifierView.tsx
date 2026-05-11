@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import type { Work } from "@/lib/queries";
+import { useEffect, useLayoutEffect, useMemo } from "react";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import OptimizedImage from "@/components/images/OptimizedImage";
 import ImageMagnifier from "@/components/ImageMagnifier";
 import useScrollCycle, {
@@ -10,40 +10,31 @@ import useScrollCycle, {
 } from "@/hooks/useScrollCycle";
 import { useActiveSlide } from "@/contexts/ActiveSlideContext";
 
-interface OverviewScrollFadeProps {
-  works: Work[];
+export interface WorkMagnifierSlide {
+  id: string;
+  title?: string;
+  image: SanityImageSource;
+}
+
+interface WorkProjectMagnifierViewProps {
+  slides: WorkMagnifierSlide[];
+  startIndex: number;
+  onClose: () => void;
 }
 
 const TRANSITION_MS = 0;
 
-export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
-  const slides = useMemo(
-    () =>
-      works.flatMap((work) =>
-        (work.images ?? []).flatMap((imageItem, imageIndex) => {
-          const image = imageItem.image;
-          if (image == null) return [];
-          return [
-            {
-              id: `${work._id}-${imageIndex}`,
-              title: imageItem.title ?? work.title,
-              image,
-            },
-          ];
-        })
-      ),
-    [works]
-  );
+export default function WorkProjectMagnifierView({
+  slides,
+  startIndex,
+  onClose,
+}: WorkProjectMagnifierViewProps) {
+  const { activeIndex, slideProgress, scrollToSlide } = useScrollCycle(slides.length);
+  const { setActiveTitle, setSlideProgress, setOverviewSlides } = useActiveSlide();
 
-  const { activeIndex, slideProgress } = useScrollCycle(slides.length);
-
-  const {
-    setActiveTitle,
-    setSlideProgress,
-    magnifying,
-    setMagnifying,
-    setOverviewSlides,
-  } = useActiveSlide();
+  useLayoutEffect(() => {
+    scrollToSlide(startIndex);
+  }, [scrollToSlide, startIndex]);
 
   useEffect(() => {
     const title = slides[activeIndex]?.title?.trim() || "";
@@ -63,36 +54,33 @@ export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
     return () => setOverviewSlides(0, 0);
   }, [activeIndex, slides.length, setOverviewSlides]);
 
+  const scrollHeightVh = useMemo(
+    () => TOTAL_CYCLES * slides.length * SCROLL_VH_PER_SLIDE + 100,
+    [slides.length]
+  );
 
   if (slides.length === 0) {
-    return (
-      <div
-        className="h-[100vh] w-[100vw]"
-        style={{ backgroundColor: "var(--color-background)" }}
-      />
-    );
+    return null;
   }
 
-  const scrollHeightVh =
-    TOTAL_CYCLES * slides.length * SCROLL_VH_PER_SLIDE + 100;
+  const active = slides[activeIndex];
 
   return (
     <>
-      {magnifying && slides[activeIndex] && (
+      {active && (
         <ImageMagnifier
-          image={slides[activeIndex].image}
-          alt={slides[activeIndex].title ?? "Overview image"}
-          onClose={() => setMagnifying(false)}
+          image={active.image}
+          alt={active.title ?? "Work image"}
+          onClose={onClose}
         />
       )}
       <div
         className="fixed inset-0 z-0 flex items-center justify-center overflow-hidden"
         style={{
           backgroundColor: "var(--color-background)",
-          pointerEvents: magnifying ? "none" : "auto",
-          cursor: magnifying ? "default" : "zoom-in",
+          pointerEvents: "none",
+          cursor: "default",
         }}
-        onClick={() => setMagnifying(true)}
       >
         {slides.map((slide, index) => {
           const isActive = index === activeIndex;
@@ -108,13 +96,13 @@ export default function OverviewScrollFade({ works }: OverviewScrollFadeProps) {
               <div
                 className="relative"
                 style={{
-                  height: "70vh",
+                  height: "60vh",
                   width: "calc(100vw - 2 * var(--padding-base))",
                 }}
               >
                 <OptimizedImage
                   image={slide.image}
-                  alt={slide.title ?? "Overview image"}
+                  alt={slide.title ?? "Work image"}
                   fill
                   priority={index === 0}
                   sizes="calc(100vw - 2 * var(--padding-base))"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useMemo } from "react";
+import { useCallback, useRef, useMemo } from "react";
 import Image from "next/image";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { urlForImage } from "@/lib/image";
@@ -14,7 +14,6 @@ import { urlForImage } from "@/lib/image";
  * 
  * Features:
  * - Full Next.js Image Optimization (automatic srcsets, AVIF/WebP)
- * - CSS-based gradient placeholder with smooth fade transition
  * - Automatic responsive image sizing based on sizes prop
  * - TypeScript-first with strong typing
  * 
@@ -167,9 +166,7 @@ export default function OptimizedImage({
   onError,
 }: OptimizedImageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // Track when image has loaded to fade out placeholder
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
+
   // Extract Sanity asset ref to check validity
   const assetRef = getSanityAssetRef(image);
   
@@ -182,31 +179,12 @@ export default function OptimizedImage({
       return null;
     }
   }, [image]);
-  
-  // Generate blurred placeholder image URL (very small, very low quality for fast loading)
-  const blurPlaceholderUrl = useMemo(() => {
-    if (!image) return null;
-    try {
-      return urlForImage(image)
-        .width(10)
-        .height(10)
-        .quality(5)
-        .fit("crop")
-        .url();
-    } catch {
-      return null;
-    }
-  }, [image]);
-  
-  // Handle image load
+
   const handleLoad = useCallback(
     (event: React.SyntheticEvent<HTMLImageElement>) => {
       const img = event.currentTarget;
       const naturalWidth = img.naturalWidth;
       const naturalHeight = img.naturalHeight;
-      
-      // Mark image as loaded to fade out placeholder
-      setImageLoaded(true);
       
       // Calculate rendered dimensions by measuring the container
       let renderedWidth = naturalWidth;
@@ -271,45 +249,18 @@ export default function OptimizedImage({
   
   // Build style object
   // For fill mode: position is automatically absolute (cannot be overridden), so we only set zIndex
-  // For fixed dimensions: we set position relative to ensure proper layering above placeholder
   const imageStyle: React.CSSProperties = {
-    zIndex: 2,
+    zIndex: 1,
   };
   if (!fill) {
     imageStyle.position = "relative";
   }
   if (objectFit) imageStyle.objectFit = objectFit;
   if (objectPosition) imageStyle.objectPosition = objectPosition;
-  
-  // CSS placeholder styles with blurred image
-  // Background color shows first, then blur image overlays when loaded
-  // Use "contain" backgroundSize when objectFit is "contain" to match image behavior
-  const placeholderStyle: React.CSSProperties = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "var(--placeholder-color, #f3f4f6)", // Shows immediately, falls back to gray
-    backgroundImage: blurPlaceholderUrl ? `url(${blurPlaceholderUrl})` : undefined,
-    backgroundSize: objectFit === "contain" ? "contain" : "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    filter: blurPlaceholderUrl ? "blur(20px)" : "none",
-    transform: objectFit === "contain" ? "none" : (blurPlaceholderUrl ? "scale(1.1)" : "none"), // Only scale if using cover
-    opacity: imageLoaded ? 0 : 1,
-    transition: "opacity 0.3s ease-out",
-    pointerEvents: "none",
-    zIndex: 1,
-  };
-  
-  // Render fill mode
+
   if (fill) {
     return (
       <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} className={className}>
-        {/* CSS placeholder */}
-        <div style={placeholderStyle} aria-hidden="true" />
-        {/* Image */}
         <Image
           src={src}
           alt={alt}
@@ -351,9 +302,6 @@ export default function OptimizedImage({
         maxWidth: "100%",
       }}
     >
-      {/* CSS placeholder */}
-      <div style={placeholderStyle} aria-hidden="true" />
-      {/* Image */}
       <Image
         src={src}
         alt={alt}

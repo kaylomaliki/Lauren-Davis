@@ -4,7 +4,7 @@
   /* Colors - Basic palette */
   --color-primary: 0 0 0;
   --color-secondary: 255 255 255;
-  
+
   /* Spacing - Base scale */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -14,28 +14,36 @@
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
 
-  /* Padding */
-  --padding-base: 20px; /* Default: 15px, changes to 10px on mobile */
+  /* Padding — default (viewport ≥640px). Mobile override below. */
+  --padding-base: 30px;
 
-  /* Responsive padding - 10px on mobile */
-@media (max-width: 639px) {
-  :root {
-    --padding-base: 15px;
-  }
-}
   /* Breakpoints - Device sizes */
   /* These can be used in CSS media queries */
-  --breakpoint-phone: 640px;      /* Phone: up to 639px */
-  --breakpoint-tablet: 768px;     /* Tablet: 640px - 767px */
-  --breakpoint-desktop: 1024px;   /* Desktop: 768px - 1023px */
+  --breakpoint-phone: 640px; /* Phone: up to 639px */
+  --breakpoint-tablet: 768px; /* Tablet: 640px - 767px */
+  --breakpoint-desktop: 1024px; /* Desktop: 768px - 1023px */
   --breakpoint-large-desktop: 1280px; /* Large Desktop: 1024px+ */
 
   /* Colors - Background and text */
-  --color-background: rgb(255, 255, 255);    /* White background */
-  --color-text: #555555;          /* Black text */
-  --color-border: #ffffff;        /* Black border / accent lines */
+  --color-background: rgb(255, 255, 255); /* White background */
+  --color-text: #000000; /* Black text */
+  --color-text-grey: #aaaaaa; /* Grey text */
+  --color-border: #ffffff; /* Black border / accent lines */
+
+  /* Nav: work-page close (X) hit box — change width/height together */
+  --nav-close-size: 32px;
+
+  /* Stacking: magnifier below nav chrome; intro loader above both */
+  --z-magnifier: 10000;
+  --z-nav: 10001;
+  --z-site-intro: 12000;
 
   /* Transitions */
-  --transition-duration: 0.3s;    /* Default transition duration */
+  --transition-duration: 0.3s; /* Default transition duration */
 }
 
+@media (max-width: 639px) {
+  :root {
+    --padding-base: 25px;
+  }
+}

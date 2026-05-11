@@ -26,6 +26,15 @@ export interface Homepage {
 
 export type WorkTag = "commercial" | "editorial" | "fashion" | "music" | "press photos";
 
+/** All tags defined on the work schema (Sanity). */
+export const WORK_TAGS: readonly WorkTag[] = [
+  "commercial",
+  "editorial",
+  "fashion",
+  "music",
+  "press photos",
+];
+
 export interface WorkImageItem {
   image?: SanityImageSource;
   title?: string;
@@ -87,7 +96,7 @@ export async function getHomepage(): Promise<Homepage | null> {
  */
 export async function getAllWork(): Promise<Work[]> {
   try {
-    const query = `*[_type == "work"]{
+    const query = `*[_type == "work"] | order(orderRank) {
       _id,
       title,
       "images": images[] {

@@ -1,3 +1,4 @@
+import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import globalSettings from "./schemaTypes/globalSettings";
@@ -25,7 +26,7 @@ export default defineConfig({
   useCdn: true,
   plugins: [
     structureTool({
-      structure: (S) =>
+      structure: (S, context) =>
         S.list()
           .title("Content")
           .items([
@@ -37,8 +38,15 @@ export default defineConfig({
                   .schemaType("homepage")
                   .documentId("homepage")
               ),
+            orderableDocumentListDeskItem({
+              type: "work",
+              title: "Work",
+              S,
+              context,
+            }),
             ...S.documentTypeListItems().filter(
-              (listItem) => listItem.getId() !== "homepage"
+              (listItem) =>
+                !["homepage", "work"].includes(listItem.getId() ?? "")
             ),
           ]),
     }),
